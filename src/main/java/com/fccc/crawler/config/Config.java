@@ -87,7 +87,4 @@ public class Config {
         LogUtil.d("Config", "----------------------------------------------------------------");
     }
 
-    public static void main(String[] args) {
-
-    }
 }

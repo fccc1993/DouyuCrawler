@@ -1,6 +1,7 @@
 package com.fccc.crawler.thread;
 
 import com.fccc.crawler.bean.Danmaku;
+import com.fccc.crawler.bean.NewAudience;
 import com.fccc.crawler.bean.Request;
 import com.fccc.crawler.bean.ServerInfo;
 import com.fccc.crawler.db.DanmakuDao;
@@ -69,6 +70,7 @@ public class CrawlerThread implements Runnable {
 
         private boolean finished = false;
         private List<Danmaku> danmakus = new ArrayList<Danmaku>();
+        private List<NewAudience> newAudiences = new ArrayList<NewAudience>();
         private TimeHelper helper = new TimeHelper(20 * 60 * 1000);//间隔20min检测一次直播状态
 
         @Override
@@ -81,11 +83,16 @@ public class CrawlerThread implements Runnable {
 
                 //解析弹幕
                 Danmaku danmaku = ResponseParser.parseDanmaku(response);
-                if (danmaku == null) continue;
-
-                danmakus.add(danmaku);
-                LogUtil.i("Danmaku", danmaku.getSnick() + ":" + danmaku.getContent());
-
+                NewAudience newAudience = ResponseParser.parseNewAudience(response);
+                if (danmaku == null && newAudience == null) continue;
+                if (danmaku != null) {
+                    danmakus.add(danmaku);
+                    LogUtil.i("Danmaku", danmaku.getSnick() + ":" + danmaku.getContent());
+                }
+                if (newAudience != null) {
+                    newAudiences.add(newAudience);
+                    LogUtil.i("NewAudience", newAudience.getSnick() + "进入直播间");
+                }
                 if (danmakus.size() >= 20 && DanmakuDao.saveDanmaku(danmakus)) {
                     LogUtil.i("DB", "保存弹幕到数据库 ...");
                     danmakus.clear();

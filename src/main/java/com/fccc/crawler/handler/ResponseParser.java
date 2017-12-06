@@ -3,6 +3,7 @@ package com.fccc.crawler.handler;
 
 
 import com.fccc.crawler.bean.Danmaku;
+import com.fccc.crawler.bean.NewAudience;
 import com.fccc.crawler.bean.ServerInfo;
 import com.fccc.crawler.util.LogUtil;
 
@@ -23,7 +24,7 @@ public class ResponseParser {
     private static final String REGEX_GROUP_ID = "type@=setmsggroup.*/rid@=(\\d*?)/gid@=(\\d*?)/";
     private static final String REGEX_DANMAKU_SERVER = "/ip@=(.*?)/port@=(\\d*?)/";
     private static final String REGEX_CHAT_DANMAKU = "type@=chatmsg/.*rid@=(\\d*?)/.*uid@=(\\d*).*nn@=(.*?)/txt@=(.*?)/(.*)/";
-
+    private static final String REGEX_CHAT_ENTER = "type@=uenter/.*rid@=(\\d*?)/.*uid@=(\\d*).*nn@=(.*?)/level@=(\\d*)/(.*)/";
 
     private static Matcher getMatcher(String content, String regex) {
         Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
@@ -133,5 +134,27 @@ public class ResponseParser {
         return danmaku;
     }
 
+    /**
+     *
+     * @param response
+     * @return
+     */
+    public static NewAudience parseNewAudience(String response) {
+        if (response == null) return null;
+
+        Matcher matcher = getMatcher(response, REGEX_CHAT_ENTER);
+        NewAudience newAudience = null;
+
+        if (matcher.find()) {
+            newAudience = new NewAudience(Integer.parseInt(matcher.group(2)),
+                    matcher.group(3),
+                    Integer.parseInt(matcher.group(4)),
+                    Integer.parseInt(matcher.group(1)));
+        }
+
+        LogUtil.d("Parse NewAudience", newAudience + "");
+
+        return newAudience;
+    }
 
 }
