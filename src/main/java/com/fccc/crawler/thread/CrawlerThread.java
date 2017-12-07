@@ -1,7 +1,7 @@
 package com.fccc.crawler.thread;
 
+import com.fccc.crawler.bean.Audience;
 import com.fccc.crawler.bean.Danmaku;
-import com.fccc.crawler.bean.NewAudience;
 import com.fccc.crawler.bean.Request;
 import com.fccc.crawler.bean.ServerInfo;
 import com.fccc.crawler.db.DanmakuDao;
@@ -70,7 +70,7 @@ public class CrawlerThread implements Runnable {
 
         private boolean finished = false;
         private List<Danmaku> danmakus = new ArrayList<Danmaku>();
-        private List<NewAudience> newAudiences = new ArrayList<NewAudience>();
+        private List<Audience> audiences = new ArrayList<Audience>();
         private TimeHelper helper = new TimeHelper(20 * 60 * 1000);//间隔20min检测一次直播状态
 
         @Override
@@ -79,21 +79,23 @@ public class CrawlerThread implements Runnable {
             for (String response : responses) {
                 LogUtil.d("Receive Response", response);
 
-                if (!response.contains("chatmsg")) continue;
+                if (!response.contains("chatmsg") && !response.contains("uenter")) continue;
 
                 //解析弹幕
                 Danmaku danmaku = ResponseParser.parseDanmaku(response);
-                NewAudience newAudience = ResponseParser.parseNewAudience(response);
-                if (danmaku == null && newAudience == null) continue;
+                Audience audience = ResponseParser.parseAudience(response);
+                if (danmaku == null && audience == null) continue;
                 if (danmaku != null) {
                     danmakus.add(danmaku);
-                    LogUtil.i("Danmaku", danmaku.getSnick() + ":" + danmaku.getContent());
+                    LogUtil.i("Danmaku", "(level-"+danmaku.getLevel()+")"+danmaku.getSnick() + ":" + danmaku.getContent());
                 }
-                if (newAudience != null) {
-                    newAudiences.add(newAudience);
-                    LogUtil.i("NewAudience", newAudience.getSnick() + "进入直播间");
+                if (audience != null) {
+                    audiences.add(audience);
+                    LogUtil.i("Audience", "(level-"+audience.getLevel()+")"+audience.getSnick() + "进入直播间");
                 }
-                if (danmakus.size() >= 20 && DanmakuDao.saveDanmaku(danmakus)) {
+                    System.out.println("--------------------------------------------------"+danmakus.size());
+                if (danmakus.size() >= 20 ) {
+                    DanmakuDao.saveDanmaku(danmakus);
                     LogUtil.i("DB", "保存弹幕到数据库 ...");
                     danmakus.clear();
                 }

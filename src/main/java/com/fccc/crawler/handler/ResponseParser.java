@@ -2,8 +2,8 @@ package com.fccc.crawler.handler;
 
 
 
+import com.fccc.crawler.bean.Audience;
 import com.fccc.crawler.bean.Danmaku;
-import com.fccc.crawler.bean.NewAudience;
 import com.fccc.crawler.bean.ServerInfo;
 import com.fccc.crawler.util.LogUtil;
 
@@ -23,7 +23,7 @@ public class ResponseParser {
     private static final String REGEX_SERVER = "%7B%22ip%22%3A%22(.*?)%22%2C%22port%22%3A%22(.*?)%22%7D%2C";
     private static final String REGEX_GROUP_ID = "type@=setmsggroup.*/rid@=(\\d*?)/gid@=(\\d*?)/";
     private static final String REGEX_DANMAKU_SERVER = "/ip@=(.*?)/port@=(\\d*?)/";
-    private static final String REGEX_CHAT_DANMAKU = "type@=chatmsg/.*rid@=(\\d*?)/.*uid@=(\\d*).*nn@=(.*?)/txt@=(.*?)/(.*)/";
+    private static final String REGEX_CHAT_DANMAKU = "type@=chatmsg/.*rid@=(\\d*?)/.*uid@=(\\d*).*nn@=(.*?)/txt@=(.*?)/.*level@=(\\d*?)/(.*)/";
     private static final String REGEX_CHAT_ENTER = "type@=uenter/.*rid@=(\\d*?)/.*uid@=(\\d*).*nn@=(.*?)/level@=(\\d*)/(.*)/";
 
     private static Matcher getMatcher(String content, String regex) {
@@ -123,10 +123,11 @@ public class ResponseParser {
         Danmaku danmaku = null;
 
         if (matcher.find()) {
-            danmaku = new Danmaku(Integer.parseInt(matcher.group(2)),
+            danmaku = new Danmaku(matcher.group(2),
                     matcher.group(3),
                     matcher.group(4),
-                    Integer.parseInt(matcher.group(1)));
+                    matcher.group(1),
+                    Integer.parseInt(matcher.group(5)));
         }
 
         LogUtil.d("Parse Danmaku", danmaku + "");
@@ -134,27 +135,22 @@ public class ResponseParser {
         return danmaku;
     }
 
-    /**
-     *
-     * @param response
-     * @return
-     */
-    public static NewAudience parseNewAudience(String response) {
+    public static Audience parseAudience(String response) {
         if (response == null) return null;
 
         Matcher matcher = getMatcher(response, REGEX_CHAT_ENTER);
-        NewAudience newAudience = null;
+        Audience audience = null;
 
         if (matcher.find()) {
-            newAudience = new NewAudience(Integer.parseInt(matcher.group(2)),
+            audience = new Audience(Integer.parseInt(matcher.group(2)),
                     matcher.group(3),
                     Integer.parseInt(matcher.group(4)),
                     Integer.parseInt(matcher.group(1)));
         }
 
-        LogUtil.d("Parse NewAudience", newAudience + "");
+        LogUtil.d("Parse Audience", audience + "");
 
-        return newAudience;
+        return audience;
     }
 
 }

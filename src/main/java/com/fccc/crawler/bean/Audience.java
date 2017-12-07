@@ -1,20 +1,24 @@
 package com.fccc.crawler.bean;
 
+import java.util.Date;
+
 /**
  * Created by fccc on 2017/12/5.
  */
 
-public class NewAudience {
+public class Audience {
     private int uid;//用户id
     private String snick;//昵称
     private int level;//
     private int rid;//房间号
+    private Date date;//发布时间
 
-    public NewAudience(int uid, String snick,  int level, int rid) {
+    public Audience(int uid, String snick,  int level, int rid) {
         this.uid = uid;
         this.snick = snick;
         this.level = level;
         this.rid = rid;
+        date = new Date();
     }
 
     @Override
@@ -57,5 +61,13 @@ public class NewAudience {
 
     public void setRid(int rid) {
         this.rid = rid;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }

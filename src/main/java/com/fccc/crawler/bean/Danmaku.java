@@ -8,18 +8,20 @@ import java.util.Date;
  */
 public class Danmaku {
 
-    private int uid;//用户id
+    private String uid;//用户id
     private String snick;//昵称
     private String content;//内容
     private Date date;//发布时间
-    private int rid;//房间号
+    private String rid;//房间号
+    private int level;//用户等级
 
-    public Danmaku(int uid, String snick, String content, int rid) {
+    public Danmaku(String uid, String snick, String content, String rid, int level) {
         this.uid = uid;
         this.snick = snick;
         this.content = content;
         this.date = new Date();
         this.rid = rid;
+        this.level = level;
     }
 
     @Override
@@ -30,16 +32,10 @@ public class Danmaku {
                 ", content='" + content + '\'' +
                 ", date=" + date +
                 ", rid=" + rid +
+                ", level=" + level +
                 '}';
     }
 
-    public int getUid() {
-        return uid;
-    }
-
-    public void setUid(int uid) {
-        this.uid = uid;
-    }
 
     public String getSnick() {
         return snick;
@@ -65,11 +61,27 @@ public class Danmaku {
         this.date = date;
     }
 
-    public int getRid() {
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getRid() {
         return rid;
     }
 
-    public void setRid(int rid) {
+    public void setRid(String rid) {
         this.rid = rid;
     }
 }
